@@ -19,6 +19,12 @@ class FickleCookiesParam(FickleParam):
             value = unquote(string[index + 1:])
             return cls(key, value)
 
+    def __repr__(self):
+        if self.value:
+            return "<CookieParam: {}={}>".format(self.key, self.value)
+        else:
+            return "<CookieParam: {}>".format(self.key)
+
 
 class FickleHeaders(object):
 

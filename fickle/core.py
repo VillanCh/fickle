@@ -56,3 +56,14 @@ class FickleRequest(object):
         headers = self.fickle_headers.shift_cookies_param(key, value)
         req = self._new_request(headers=headers)
         return req
+
+    def params(self):
+        for param in self.fickle_query.params.values():
+            yield param
+
+        if self.fickle_post.is_json:
+            for param in self.fickle_post.json_params():
+                yield param
+        else:
+            for param in self.fickle_post.params.values():
+                yield param

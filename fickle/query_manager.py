@@ -28,6 +28,12 @@ class FickleQueryParam(FickleParam):
         else:
             return quote(self.key)
 
+    def __repr__(self):
+        if self.value:
+            return "<QueryParam: {}={}>".format(self.key, self.value)
+        else:
+            return "<QueryParam: {}>".format(self.key)
+
 
 class FickleQuery(object):
 
@@ -40,6 +46,9 @@ class FickleQuery(object):
         self._parse_query_to_params(self._url_parsed.query)
 
     def _parse_query_to_params(self, query):
+        if not query:
+            return
+
         for block in query.split("&"):
             param = FickleQueryParam.unparse_from_string(block)
             if param.key in self.params:

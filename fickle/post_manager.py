@@ -12,9 +12,24 @@ class FicklePostParam(FickleQueryParam):
     def __init__(self, key, value):
         FickleParam.__init__(self, key, value, FickleParamPosition.POSITION_POST)
 
+    def __repr__(self):
+        if self.value:
+            return "<PostParam: {}={}>".format(self.key, self.value)
+        else:
+            return "<PostParam: {}>".format(self.key)
+
 
 class FickleJsonParam(FickleParam):
-    pass
+
+    def __init__(self, key, value):
+        FickleParam.__init__(self, key, value, FickleParamPosition.POSITION_JSON)
+
+    @property
+    def string(self):
+        raise ValueError("JsonParam cannot be string.")
+
+    def __repr__(self):
+        return "<JsonParam: {}={}>".format(self.key, self.value)
 
 
 class FicklePost(object):
@@ -34,6 +49,8 @@ class FicklePost(object):
 
         if not is_json:
             self._parse_post_to_params(data)
+        else:
+            self.json_object = json.loads(data)
 
     def _parse_post_to_params(self, query: str):
         if not query:
@@ -82,3 +99,8 @@ class FicklePost(object):
                     new_query = param.string
 
         return new_query
+
+    def json_params(self):
+        if isinstance(self.json_object, dict):
+            for (key, value) in self.json_object.items():
+                yield FickleJsonParam(key, value)
