@@ -2,12 +2,23 @@
 # coding:utf-8
 import requests
 from .query_manager import FickleQuery
+from .post_manager import FicklePost
+from .header_manager import FickleHeaders
 
 class FickleRequest(object):
 
     def __init__(self, prepared_request: requests.PreparedRequest):
         self.prepared_request = prepared_request
+
+        # parse query
         self.fickle_query = FickleQuery(self.prepared_request.url)
+
+        # parse post data
+        _json = 'application/json' == self.prepared_request.headers.get("Content-Type")
+        self.fickle_post = FicklePost(prepared_request.body or "", _json)
+
+        # parse headers
+        self.fickle_headers = FickleHeaders(prepared_request.headers or {})
 
     @classmethod
     def build(cls, url, method="GET", query=None, data=None, auth=None, headers=None, cookies=None):
@@ -31,7 +42,17 @@ class FickleRequest(object):
         body = body or self.prepared_request.body
         return requests.Request(method, url, headers, None, body, None, None, None)
 
-    def shift_param(self, key, value):
-        url = fickle_query.shift_param()
+    def shift_query_param(self, key, value=""):
+        url, _ = self.fickle_query.shift_param(key, value)
         req = self._new_request(url=url)
-        
+        return req
+
+    def shift_post_param(self, key, value=""):
+        data = self.fickle_post.shift_param(key, value)
+        req = self._new_request(body=data)
+        return req
+
+    def shift_cookies_param(self, key, value):
+        headers = self.fickle_headers.shift_cookies_param(key, value)
+        req = self._new_request(headers=headers)
+        return req
