@@ -5,5 +5,6 @@ __pycache__
 *.pdf
 venv/
 build/
+.idea/
 dist/
 *.egg-info/
