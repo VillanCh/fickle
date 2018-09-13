@@ -67,3 +67,5 @@ class FickleRequest(object):
         else:
             for param in self.fickle_post.params.values():
                 yield param
+
+    new_request = _new_request
