@@ -6,6 +6,7 @@ from .. import core
 from .. import base
 from .. import post_manager
 
+
 class FickleReqTestCase(unittest.TestCase):
 
     def test_urcase(self):
@@ -45,6 +46,12 @@ class FickleReqTestCase(unittest.TestCase):
     def test_params(self):
         req = core.FickleRequest.build(url='https://baidu.com/a/b/c?a=1&c=3', data="d=4&e=6", )
         _l = list(req.params())
+        self.assertNotEqual([], _l)
+        for param in _l:
+            nreq = req.shift_by_param(param, "1")
+            self.assertIsInstance(nreq, requests.Request)
+
+        _l = list(req.params())
         self.assertNotEqual(_l, [])
         for param in _l:
             print(param)
@@ -53,11 +60,12 @@ class FickleReqTestCase(unittest.TestCase):
         req = core.FickleRequest.from_request(
             requests.Request(method='GET', url="https://baidu.com", json={"a": "b", "c": "d"}))
         _l = list(req.params())
-        self.assertNotEqual([], _l  )
+        self.assertNotEqual([], _l)
         for param in _l:
             self.assertIsInstance(param, base.FickleParam)
             self.assertIsInstance(param, post_manager.FickleJsonParam)
             print(param)
+
 
 if __name__ == '__main__':
     unittest.main()

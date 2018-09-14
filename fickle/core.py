@@ -4,6 +4,7 @@ import requests
 from .query_manager import FickleQuery
 from .post_manager import FicklePost
 from .header_manager import FickleHeaders
+from .base import FickleParam, FickleParamPosition
 
 class FickleRequest(object):
 
@@ -69,3 +70,13 @@ class FickleRequest(object):
                 yield param
 
     new_request = _new_request
+
+    def shift_by_param(self, param: FickleParam, new_value=""):
+        if param.position == FickleParamPosition.POSITION_QUERY:
+            return self.shift_query_param(param.key, new_value)
+        elif param.position == FickleParamPosition.POSITION_COOKIES:
+            return self.shift_cookies_param(param.key, new_value)
+        elif param.position == FickleParamPosition.POSITION_POST:
+            return self.shift_post_param(param.key, new_value)
+        else:
+            raise NotImplementedError()
